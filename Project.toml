@@ -1,0 +1,13 @@
+name = "WebP"
+uuid = "e3aaa7dc-3e4b-44e0-be63-ffb868ccd7c1"
+authors = ["Jesper Stemann Andersen"]
+version = "0.1.0"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]

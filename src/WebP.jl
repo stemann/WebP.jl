@@ -1,0 +1,2 @@
+module WebP
+end
