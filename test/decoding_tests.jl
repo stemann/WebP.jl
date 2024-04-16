@@ -40,14 +40,14 @@ using WebP
                         expected_image_size = image_size
                     end
 
-                    @testset "WebP.decode($(joinpath(gallery.url, filename)); $kwargs)" begin
-                        image = WebP.decode(file_path; kwargs...)
+                    @testset "WebP.read_webp($(joinpath(gallery.url, filename)); $kwargs)" begin
+                        image = WebP.read_webp(file_path; kwargs...)
                         @test size(image) == expected_image_size
                     end
 
                     for TColor in [ARGB{N0f8}, BGR{N0f8}, BGRA{N0f8}, RGB{N0f8}, RGBA{N0f8}, Gray{N0f8}]
-                        @testset "WebP.decode($TColor, $(joinpath(gallery.url, filename)); $kwargs)" begin
-                            image = WebP.decode(TColor, file_path; kwargs...)
+                        @testset "WebP.read_webp($TColor, $(joinpath(gallery.url, filename)); $kwargs)" begin
+                            image = WebP.read_webp(TColor, file_path; kwargs...)
                             @test size(image) == expected_image_size
                         end
                     end

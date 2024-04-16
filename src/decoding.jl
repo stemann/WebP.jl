@@ -39,9 +39,9 @@ end
 decode(data::AbstractVector{UInt8}; kwargs...)::Matrix{RGB{N0f8}} =
     decode(RGB{N0f8}, data; kwargs...)
 
-function decode(
-    ::Type{CT}, f::Union{String, IO}; kwargs...
+function read_webp(
+    ::Type{CT}, f::Union{AbstractString, IO}; kwargs...
 )::Matrix{CT} where {CT <: Colorant}
     return decode(CT, Base.read(f); kwargs...)
 end
-decode(f::Union{String, IO}; kwargs...)::Matrix{RGB{N0f8}} = decode(RGB{N0f8}, f; kwargs...)
+read_webp(f::Union{AbstractString, IO}; kwargs...)::Matrix{RGB{N0f8}} = read_webp(RGB{N0f8}, f; kwargs...)
