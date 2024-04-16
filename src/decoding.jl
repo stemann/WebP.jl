@@ -25,9 +25,9 @@ function decode(
     decoded_data = unsafe_wrap(Array{UInt8, 3}, decoded_data_ptr, decoded_data_size)
     image_view = colorview(TDecodedColor, normedview(decoded_data))
     if TDecodedColor == TColor
-        image = !transpose ? collect(image_view) : permutedims(image_view, (2, 1))
+        image = transpose ? collect(image_view) : permutedims(image_view, (2, 1))
     else
-        image = if !transpose
+        image = if transpose
             TColor.(image_view)
         else
             TColor.(PermutedDimsArray(image_view, (2, 1)))

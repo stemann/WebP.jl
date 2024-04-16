@@ -18,7 +18,7 @@ function encode(
         image = permutedims(image, (2, 1))
     end
 
-    height, width = size(image)
+    width, height = size(image)
     stride = width * sizeof(TColor)
     output_ptr = Ref{Ptr{UInt8}}()
     if lossy
