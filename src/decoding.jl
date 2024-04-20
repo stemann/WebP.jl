@@ -44,4 +44,5 @@ function read_webp(
 )::Matrix{CT} where {CT <: Colorant}
     return decode(CT, Base.read(f); kwargs...)
 end
-read_webp(f::Union{AbstractString, IO}; kwargs...)::Matrix{RGB{N0f8}} = read_webp(RGB{N0f8}, f; kwargs...)
+read_webp(f::Union{AbstractString, IO}; kwargs...)::Matrix{RGB{N0f8}} =
+    read_webp(RGB{N0f8}, f; kwargs...)

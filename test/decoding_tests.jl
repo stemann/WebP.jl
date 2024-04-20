@@ -45,7 +45,9 @@ using WebP
                         @test size(image) == expected_image_size
                     end
 
-                    for TColor in [ARGB{N0f8}, BGR{N0f8}, BGRA{N0f8}, RGB{N0f8}, RGBA{N0f8}, Gray{N0f8}]
+                    for TColor in [
+                        ARGB{N0f8}, BGR{N0f8}, BGRA{N0f8}, RGB{N0f8}, RGBA{N0f8}, Gray{N0f8}
+                    ]
                         @testset "WebP.read_webp($TColor, $(joinpath(gallery.url, filename)); $kwargs)" begin
                             image = WebP.read_webp(TColor, file_path; kwargs...)
                             @test size(image) == expected_image_size
