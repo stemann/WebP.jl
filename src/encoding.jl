@@ -1,5 +1,7 @@
 function encode(
-    image::AbstractMatrix{TColor}; quality::Union{Int, Nothing} = nothing, transpose = false
+    image::AbstractMatrix{TColor};
+    quality::Union{Real, Nothing} = nothing,
+    transpose = false,
 )::Vector{UInt8} where {TColor <: Colorant}
     lossy = !isnothing(quality)
     if lossy && !(0 ≤ quality ≤ 100)

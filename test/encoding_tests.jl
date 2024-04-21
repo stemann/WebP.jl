@@ -31,8 +31,9 @@ using WebP
                     @test_throws ArgumentError WebP.encode(input_image; quality = 101)
                 end
                 qualities = [1, 10, 50, 100]
-                for quality in qualities
-                    input_kwargs = merge(kwargs, (quality = quality,))
+                quality_types = [Int, Float32, Float64]
+                for quality in qualities, TQuality in quality_types
+                    input_kwargs = merge(kwargs, (quality = TQuality(quality),))
                     @testset "WebP.encode(::Matrix{$TColor}; $input_kwargs)" begin
                         data = WebP.encode(input_image; input_kwargs...)
                         output = WebP.decode(data)
