@@ -26,6 +26,10 @@ using WebP
             end
 
             @testset "Lossy" begin
+                @testset "encode throws ArgumentError for quality outside range" begin
+                    @test_throws ArgumentError WebP.encode(input_image; quality = -1)
+                    @test_throws ArgumentError WebP.encode(input_image; quality = 101)
+                end
                 qualities = [1, 10, 50, 100]
                 for quality in qualities
                     input_kwargs = merge(kwargs, (quality = quality,))

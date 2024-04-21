@@ -2,6 +2,9 @@ function encode(
     image::AbstractMatrix{TColor}; quality::Union{Int, Nothing} = nothing, transpose = false
 )::Vector{UInt8} where {TColor <: Colorant}
     lossy = !isnothing(quality)
+    if lossy && !(0 ≤ quality ≤ 100)
+        throw(ArgumentError("Quality $quality is not in the range from 0 to 100."))
+    end
     if TColor == BGR{N0f8}
         webp_encode_fn = lossy ? Wrapper.WebPEncodeBGR : Wrapper.WebPEncodeLosslessBGR
     elseif TColor == BGRA{N0f8}
@@ -22,7 +25,7 @@ function encode(
     stride = width * sizeof(TColor)
     output_ptr = Ref{Ptr{UInt8}}()
     if lossy
-        quality_factor = quality / 100.0f0
+        quality_factor = Float32(quality)
         output_length = webp_encode_fn(
             pointer(image), width, height, stride, quality_factor, output_ptr
         )
