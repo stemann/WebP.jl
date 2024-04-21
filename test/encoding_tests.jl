@@ -27,13 +27,19 @@ using WebP
 
             @testset "Lossy" begin
                 @testset "encode throws ArgumentError for quality outside range" begin
-                    @test_throws ArgumentError WebP.encode(input_image; quality = -1)
-                    @test_throws ArgumentError WebP.encode(input_image; quality = 101)
+                    @test_throws ArgumentError WebP.encode(
+                        input_image; lossy = true, quality = -1
+                    )
+                    @test_throws ArgumentError WebP.encode(
+                        input_image; lossy = true, quality = 101
+                    )
                 end
                 qualities = [1, 10, 50, 100]
                 quality_types = [Int, Float32, Float64]
                 for quality in qualities, TQuality in quality_types
-                    input_kwargs = merge(kwargs, (quality = TQuality(quality),))
+                    input_kwargs = merge(
+                        kwargs, (lossy = true, quality = TQuality(quality))
+                    )
                     @testset "WebP.encode(::Matrix{$TColor}; $input_kwargs)" begin
                         data = WebP.encode(input_image; input_kwargs...)
                         output = WebP.decode(data)

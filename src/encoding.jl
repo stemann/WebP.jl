@@ -1,9 +1,6 @@
 function encode(
-    image::AbstractMatrix{TColor};
-    quality::Union{Real, Nothing} = nothing,
-    transpose = false,
+    image::AbstractMatrix{TColor}; lossy = false, quality::Real = 75, transpose = false
 )::Vector{UInt8} where {TColor <: Colorant}
-    lossy = !isnothing(quality)
     if lossy && !(0 ≤ quality ≤ 100)
         throw(ArgumentError("Quality $quality is not in the range from 0 to 100."))
     end
