@@ -36,13 +36,28 @@ function decode(
     Wrapper.WebPFree(decoded_data_ptr)
     return image
 end
-decode(data::AbstractVector{UInt8}; kwargs...)::Matrix{RGB{N0f8}} =
-    decode(RGB{N0f8}, data; kwargs...)
+
+function decode(
+    data::AbstractVector{UInt8}; kwargs...
+)::Union{Matrix{RGB{N0f8}}, Matrix{RGBA{N0f8}}}
+    bitstream_features = Ref{Wrapper.WebPBitstreamFeatures}()
+    # WebPGetFeatures is not available in libwebp dynamic library, but WebPGetFeaturesInternal is equivalent: https://github.com/webmproject/libwebp/blob/v1.4.0/src/webp/decode.h#L441
+    Wrapper.WebPGetFeaturesInternal(
+        pointer(data), length(data), bitstream_features, Wrapper.WEBP_DECODER_ABI_VERSION
+    )
+    has_alpha = bitstream_features[].has_alpha != 0
+    TColor = has_alpha ? RGBA{N0f8} : RGB{N0f8}
+    return decode(TColor, data; kwargs...)
+end
 
 function read_webp(
     ::Type{CT}, f::Union{AbstractString, IO}; kwargs...
 )::Matrix{CT} where {CT <: Colorant}
     return decode(CT, Base.read(f); kwargs...)
 end
-read_webp(f::Union{AbstractString, IO}; kwargs...)::Matrix{RGB{N0f8}} =
-    read_webp(RGB{N0f8}, f; kwargs...)
+
+function read_webp(
+    f::Union{AbstractString, IO}; kwargs...
+)::Union{Matrix{RGB{N0f8}}, Matrix{RGBA{N0f8}}}
+    return decode(Base.read(f); kwargs...)
+end
