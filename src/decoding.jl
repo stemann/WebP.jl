@@ -37,6 +37,15 @@ function decode(
     return image
 end
 
+function decode_animated_first_frame(
+    ::Type{TColor}, data::AbstractVector{UInt8}; transpose = false
+)::Matrix{TColor} where {TColor <: Colorant}
+    width = Ref{Int32}(-1)
+    height = Ref{Int32}(-1)
+    WebPGetInfo(pointer(data), length(data), width, height)
+    transpose ? ones(TColor, width[], height[]) : ones(TColor, height[], width[])
+end
+
 function decode(
     data::AbstractVector{UInt8}; kwargs...
 )::Union{Matrix{RGB{N0f8}}, Matrix{RGBA{N0f8}}}
@@ -47,7 +56,12 @@ function decode(
     )
     has_alpha = bitstream_features[].has_alpha != 0
     TColor = has_alpha ? RGBA{N0f8} : RGB{N0f8}
-    return decode(TColor, data; kwargs...)
+    if bitstream_features[].has_animation == 1
+        @warn("Loading animated WebP not supported.")
+        decode_animated_first_frame(TColor, data; kwargs...)
+    else
+        decode(TColor, data; kwargs...)
+    end
 end
 
 function read_webp(
