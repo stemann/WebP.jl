@@ -181,24 +181,8 @@ function WebPDecodeYUVInto(data, data_size, luma, luma_size, luma_stride, u, u_s
     ccall((:WebPDecodeYUVInto, libwebp), Ptr{UInt8}, (Ptr{UInt8}, Csize_t, Ptr{UInt8}, Csize_t, Cint, Ptr{UInt8}, Csize_t, Cint, Ptr{UInt8}, Csize_t, Cint), data, data_size, luma, luma_size, luma_stride, u, u_size, u_stride, v, v_size, v_stride)
 end
 
-function WebPIsPremultipliedMode(mode)
-    ccall((:WebPIsPremultipliedMode, libwebp), Cint, (WEBP_CSP_MODE,), mode)
-end
-
-function WebPIsAlphaMode(mode)
-    ccall((:WebPIsAlphaMode, libwebp), Cint, (WEBP_CSP_MODE,), mode)
-end
-
-function WebPIsRGBMode(mode)
-    ccall((:WebPIsRGBMode, libwebp), Cint, (WEBP_CSP_MODE,), mode)
-end
-
 function WebPInitDecBufferInternal(arg1, arg2)
     ccall((:WebPInitDecBufferInternal, libwebp), Cint, (Ptr{WebPDecBuffer}, Cint), arg1, arg2)
-end
-
-function WebPInitDecBuffer(buffer)
-    ccall((:WebPInitDecBuffer, libwebp), Cint, (Ptr{WebPDecBuffer},), buffer)
 end
 
 function WebPFreeDecBuffer(buffer)
@@ -252,10 +236,6 @@ function WebPIDecGetYUVA(idec, last_y, u, v, a, width, height, stride, uv_stride
     ccall((:WebPIDecGetYUVA, libwebp), Ptr{UInt8}, (Ptr{WebPIDecoder}, Ptr{Cint}, Ptr{Ptr{UInt8}}, Ptr{Ptr{UInt8}}, Ptr{Ptr{UInt8}}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}), idec, last_y, u, v, a, width, height, stride, uv_stride, a_stride)
 end
 
-function WebPIDecGetYUV(idec, last_y, u, v, width, height, stride, uv_stride)
-    ccall((:WebPIDecGetYUV, libwebp), Ptr{UInt8}, (Ptr{WebPIDecoder}, Ptr{Cint}, Ptr{Ptr{UInt8}}, Ptr{Ptr{UInt8}}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}), idec, last_y, u, v, width, height, stride, uv_stride)
-end
-
 function WebPIDecodedArea(idec, left, top, width, height)
     ccall((:WebPIDecodedArea, libwebp), Ptr{WebPDecBuffer}, (Ptr{WebPIDecoder}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}, Ptr{Cint}), idec, left, top, width, height)
 end
@@ -264,16 +244,8 @@ function WebPGetFeaturesInternal(arg1, arg2, arg3, arg4)
     ccall((:WebPGetFeaturesInternal, libwebp), VP8StatusCode, (Ptr{UInt8}, Csize_t, Ptr{WebPBitstreamFeatures}, Cint), arg1, arg2, arg3, arg4)
 end
 
-function WebPGetFeatures(data, data_size, features)
-    ccall((:WebPGetFeatures, libwebp), VP8StatusCode, (Ptr{UInt8}, Csize_t, Ptr{WebPBitstreamFeatures}), data, data_size, features)
-end
-
 function WebPInitDecoderConfigInternal(arg1, arg2)
     ccall((:WebPInitDecoderConfigInternal, libwebp), Cint, (Ptr{WebPDecoderConfig}, Cint), arg1, arg2)
-end
-
-function WebPInitDecoderConfig(config)
-    ccall((:WebPInitDecoderConfig, libwebp), Cint, (Ptr{WebPDecoderConfig},), config)
 end
 
 function WebPIDecode(data, data_size, config)
@@ -342,7 +314,7 @@ struct WebPAnimDecoderOptions
 end
 
 function WebPGetDemuxVersion()
-    ccall((:WebPGetDemuxVersion, libwebp), Cint, ())
+    ccall((:WebPGetDemuxVersion, libwebpdemux), Cint, ())
 end
 
 @cenum WebPDemuxState::Int32 begin
@@ -353,19 +325,11 @@ end
 end
 
 function WebPDemuxInternal(arg1, arg2, arg3, arg4)
-    ccall((:WebPDemuxInternal, libwebp), Ptr{WebPDemuxer}, (Ptr{WebPData}, Cint, Ptr{WebPDemuxState}, Cint), arg1, arg2, arg3, arg4)
-end
-
-function WebPDemux(data)
-    ccall((:WebPDemux, libwebp), Ptr{WebPDemuxer}, (Ptr{WebPData},), data)
-end
-
-function WebPDemuxPartial(data, state)
-    ccall((:WebPDemuxPartial, libwebp), Ptr{WebPDemuxer}, (Ptr{WebPData}, Ptr{WebPDemuxState}), data, state)
+    ccall((:WebPDemuxInternal, libwebpdemux), Ptr{WebPDemuxer}, (Ptr{WebPData}, Cint, Ptr{WebPDemuxState}, Cint), arg1, arg2, arg3, arg4)
 end
 
 function WebPDemuxDelete(dmux)
-    ccall((:WebPDemuxDelete, libwebp), Cvoid, (Ptr{WebPDemuxer},), dmux)
+    ccall((:WebPDemuxDelete, libwebpdemux), Cvoid, (Ptr{WebPDemuxer},), dmux)
 end
 
 @cenum WebPFormatFeature::UInt32 begin
@@ -378,81 +342,73 @@ end
 end
 
 function WebPDemuxGetI(dmux, feature)
-    ccall((:WebPDemuxGetI, libwebp), UInt32, (Ptr{WebPDemuxer}, WebPFormatFeature), dmux, feature)
+    ccall((:WebPDemuxGetI, libwebpdemux), UInt32, (Ptr{WebPDemuxer}, WebPFormatFeature), dmux, feature)
 end
 
 function WebPDemuxGetFrame(dmux, frame_number, iter)
-    ccall((:WebPDemuxGetFrame, libwebp), Cint, (Ptr{WebPDemuxer}, Cint, Ptr{WebPIterator}), dmux, frame_number, iter)
+    ccall((:WebPDemuxGetFrame, libwebpdemux), Cint, (Ptr{WebPDemuxer}, Cint, Ptr{WebPIterator}), dmux, frame_number, iter)
 end
 
 function WebPDemuxNextFrame(iter)
-    ccall((:WebPDemuxNextFrame, libwebp), Cint, (Ptr{WebPIterator},), iter)
+    ccall((:WebPDemuxNextFrame, libwebpdemux), Cint, (Ptr{WebPIterator},), iter)
 end
 
 function WebPDemuxPrevFrame(iter)
-    ccall((:WebPDemuxPrevFrame, libwebp), Cint, (Ptr{WebPIterator},), iter)
+    ccall((:WebPDemuxPrevFrame, libwebpdemux), Cint, (Ptr{WebPIterator},), iter)
 end
 
 function WebPDemuxReleaseIterator(iter)
-    ccall((:WebPDemuxReleaseIterator, libwebp), Cvoid, (Ptr{WebPIterator},), iter)
+    ccall((:WebPDemuxReleaseIterator, libwebpdemux), Cvoid, (Ptr{WebPIterator},), iter)
 end
 
 function WebPDemuxGetChunk(dmux, fourcc, chunk_number, iter)
-    ccall((:WebPDemuxGetChunk, libwebp), Cint, (Ptr{WebPDemuxer}, Ptr{Cchar}, Cint, Ptr{WebPChunkIterator}), dmux, fourcc, chunk_number, iter)
+    ccall((:WebPDemuxGetChunk, libwebpdemux), Cint, (Ptr{WebPDemuxer}, Ptr{Cchar}, Cint, Ptr{WebPChunkIterator}), dmux, fourcc, chunk_number, iter)
 end
 
 function WebPDemuxNextChunk(iter)
-    ccall((:WebPDemuxNextChunk, libwebp), Cint, (Ptr{WebPChunkIterator},), iter)
+    ccall((:WebPDemuxNextChunk, libwebpdemux), Cint, (Ptr{WebPChunkIterator},), iter)
 end
 
 function WebPDemuxPrevChunk(iter)
-    ccall((:WebPDemuxPrevChunk, libwebp), Cint, (Ptr{WebPChunkIterator},), iter)
+    ccall((:WebPDemuxPrevChunk, libwebpdemux), Cint, (Ptr{WebPChunkIterator},), iter)
 end
 
 function WebPDemuxReleaseChunkIterator(iter)
-    ccall((:WebPDemuxReleaseChunkIterator, libwebp), Cvoid, (Ptr{WebPChunkIterator},), iter)
+    ccall((:WebPDemuxReleaseChunkIterator, libwebpdemux), Cvoid, (Ptr{WebPChunkIterator},), iter)
 end
 
 mutable struct WebPAnimDecoder end
 
 function WebPAnimDecoderOptionsInitInternal(arg1, arg2)
-    ccall((:WebPAnimDecoderOptionsInitInternal, libwebp), Cint, (Ptr{WebPAnimDecoderOptions}, Cint), arg1, arg2)
-end
-
-function WebPAnimDecoderOptionsInit(dec_options)
-    ccall((:WebPAnimDecoderOptionsInit, libwebp), Cint, (Ptr{WebPAnimDecoderOptions},), dec_options)
+    ccall((:WebPAnimDecoderOptionsInitInternal, libwebpdemux), Cint, (Ptr{WebPAnimDecoderOptions}, Cint), arg1, arg2)
 end
 
 function WebPAnimDecoderNewInternal(arg1, arg2, arg3)
-    ccall((:WebPAnimDecoderNewInternal, libwebp), Ptr{WebPAnimDecoder}, (Ptr{WebPData}, Ptr{WebPAnimDecoderOptions}, Cint), arg1, arg2, arg3)
-end
-
-function WebPAnimDecoderNew(webp_data, dec_options)
-    ccall((:WebPAnimDecoderNew, libwebp), Ptr{WebPAnimDecoder}, (Ptr{WebPData}, Ptr{WebPAnimDecoderOptions}), webp_data, dec_options)
+    ccall((:WebPAnimDecoderNewInternal, libwebpdemux), Ptr{WebPAnimDecoder}, (Ptr{WebPData}, Ptr{WebPAnimDecoderOptions}, Cint), arg1, arg2, arg3)
 end
 
 function WebPAnimDecoderGetInfo(dec, info)
-    ccall((:WebPAnimDecoderGetInfo, libwebp), Cint, (Ptr{WebPAnimDecoder}, Ptr{WebPAnimInfo}), dec, info)
+    ccall((:WebPAnimDecoderGetInfo, libwebpdemux), Cint, (Ptr{WebPAnimDecoder}, Ptr{WebPAnimInfo}), dec, info)
 end
 
 function WebPAnimDecoderGetNext(dec, buf, timestamp)
-    ccall((:WebPAnimDecoderGetNext, libwebp), Cint, (Ptr{WebPAnimDecoder}, Ptr{Ptr{UInt8}}, Ptr{Cint}), dec, buf, timestamp)
+    ccall((:WebPAnimDecoderGetNext, libwebpdemux), Cint, (Ptr{WebPAnimDecoder}, Ptr{Ptr{UInt8}}, Ptr{Cint}), dec, buf, timestamp)
 end
 
 function WebPAnimDecoderHasMoreFrames(dec)
-    ccall((:WebPAnimDecoderHasMoreFrames, libwebp), Cint, (Ptr{WebPAnimDecoder},), dec)
+    ccall((:WebPAnimDecoderHasMoreFrames, libwebpdemux), Cint, (Ptr{WebPAnimDecoder},), dec)
 end
 
 function WebPAnimDecoderReset(dec)
-    ccall((:WebPAnimDecoderReset, libwebp), Cvoid, (Ptr{WebPAnimDecoder},), dec)
+    ccall((:WebPAnimDecoderReset, libwebpdemux), Cvoid, (Ptr{WebPAnimDecoder},), dec)
 end
 
 function WebPAnimDecoderGetDemuxer(dec)
-    ccall((:WebPAnimDecoderGetDemuxer, libwebp), Ptr{WebPDemuxer}, (Ptr{WebPAnimDecoder},), dec)
+    ccall((:WebPAnimDecoderGetDemuxer, libwebpdemux), Ptr{WebPDemuxer}, (Ptr{WebPAnimDecoder},), dec)
 end
 
 function WebPAnimDecoderDelete(dec)
-    ccall((:WebPAnimDecoderDelete, libwebp), Cvoid, (Ptr{WebPAnimDecoder},), dec)
+    ccall((:WebPAnimDecoderDelete, libwebpdemux), Cvoid, (Ptr{WebPAnimDecoder},), dec)
 end
 
 @cenum WebPImageHint::UInt32 begin
@@ -634,14 +590,6 @@ function WebPConfigInitInternal(arg1, arg2, arg3, arg4)
     ccall((:WebPConfigInitInternal, libwebp), Cint, (Ptr{WebPConfig}, WebPPreset, Cfloat, Cint), arg1, arg2, arg3, arg4)
 end
 
-function WebPConfigInit(config)
-    ccall((:WebPConfigInit, libwebp), Cint, (Ptr{WebPConfig},), config)
-end
-
-function WebPConfigPreset(config, preset, quality)
-    ccall((:WebPConfigPreset, libwebp), Cint, (Ptr{WebPConfig}, WebPPreset, Cfloat), config, preset, quality)
-end
-
 function WebPConfigLosslessPreset(config, level)
     ccall((:WebPConfigLosslessPreset, libwebp), Cint, (Ptr{WebPConfig}, Cint), config, level)
 end
@@ -664,10 +612,6 @@ end
 
 function WebPPictureInitInternal(arg1, arg2)
     ccall((:WebPPictureInitInternal, libwebp), Cint, (Ptr{WebPPicture}, Cint), arg1, arg2)
-end
-
-function WebPPictureInit(picture)
-    ccall((:WebPPictureInit, libwebp), Cint, (Ptr{WebPPicture},), picture)
 end
 
 function WebPPictureAlloc(picture)
@@ -818,117 +762,101 @@ end
 end
 
 function WebPGetMuxVersion()
-    ccall((:WebPGetMuxVersion, libwebp), Cint, ())
+    ccall((:WebPGetMuxVersion, libwebpmux), Cint, ())
 end
 
 function WebPNewInternal(arg1)
-    ccall((:WebPNewInternal, libwebp), Ptr{WebPMux}, (Cint,), arg1)
-end
-
-function WebPMuxNew()
-    ccall((:WebPMuxNew, libwebp), Ptr{WebPMux}, ())
+    ccall((:WebPNewInternal, libwebpmux), Ptr{WebPMux}, (Cint,), arg1)
 end
 
 function WebPMuxDelete(mux)
-    ccall((:WebPMuxDelete, libwebp), Cvoid, (Ptr{WebPMux},), mux)
+    ccall((:WebPMuxDelete, libwebpmux), Cvoid, (Ptr{WebPMux},), mux)
 end
 
 function WebPMuxCreateInternal(arg1, arg2, arg3)
-    ccall((:WebPMuxCreateInternal, libwebp), Ptr{WebPMux}, (Ptr{WebPData}, Cint, Cint), arg1, arg2, arg3)
-end
-
-function WebPMuxCreate(bitstream, copy_data)
-    ccall((:WebPMuxCreate, libwebp), Ptr{WebPMux}, (Ptr{WebPData}, Cint), bitstream, copy_data)
+    ccall((:WebPMuxCreateInternal, libwebpmux), Ptr{WebPMux}, (Ptr{WebPData}, Cint, Cint), arg1, arg2, arg3)
 end
 
 function WebPMuxSetChunk(mux, fourcc, chunk_data, copy_data)
-    ccall((:WebPMuxSetChunk, libwebp), WebPMuxError, (Ptr{WebPMux}, Ptr{Cchar}, Ptr{WebPData}, Cint), mux, fourcc, chunk_data, copy_data)
+    ccall((:WebPMuxSetChunk, libwebpmux), WebPMuxError, (Ptr{WebPMux}, Ptr{Cchar}, Ptr{WebPData}, Cint), mux, fourcc, chunk_data, copy_data)
 end
 
 function WebPMuxGetChunk(mux, fourcc, chunk_data)
-    ccall((:WebPMuxGetChunk, libwebp), WebPMuxError, (Ptr{WebPMux}, Ptr{Cchar}, Ptr{WebPData}), mux, fourcc, chunk_data)
+    ccall((:WebPMuxGetChunk, libwebpmux), WebPMuxError, (Ptr{WebPMux}, Ptr{Cchar}, Ptr{WebPData}), mux, fourcc, chunk_data)
 end
 
 function WebPMuxDeleteChunk(mux, fourcc)
-    ccall((:WebPMuxDeleteChunk, libwebp), WebPMuxError, (Ptr{WebPMux}, Ptr{Cchar}), mux, fourcc)
+    ccall((:WebPMuxDeleteChunk, libwebpmux), WebPMuxError, (Ptr{WebPMux}, Ptr{Cchar}), mux, fourcc)
 end
 
 function WebPMuxSetImage(mux, bitstream, copy_data)
-    ccall((:WebPMuxSetImage, libwebp), WebPMuxError, (Ptr{WebPMux}, Ptr{WebPData}, Cint), mux, bitstream, copy_data)
+    ccall((:WebPMuxSetImage, libwebpmux), WebPMuxError, (Ptr{WebPMux}, Ptr{WebPData}, Cint), mux, bitstream, copy_data)
 end
 
 function WebPMuxPushFrame(mux, frame, copy_data)
-    ccall((:WebPMuxPushFrame, libwebp), WebPMuxError, (Ptr{WebPMux}, Ptr{WebPMuxFrameInfo}, Cint), mux, frame, copy_data)
+    ccall((:WebPMuxPushFrame, libwebpmux), WebPMuxError, (Ptr{WebPMux}, Ptr{WebPMuxFrameInfo}, Cint), mux, frame, copy_data)
 end
 
 function WebPMuxGetFrame(mux, nth, frame)
-    ccall((:WebPMuxGetFrame, libwebp), WebPMuxError, (Ptr{WebPMux}, UInt32, Ptr{WebPMuxFrameInfo}), mux, nth, frame)
+    ccall((:WebPMuxGetFrame, libwebpmux), WebPMuxError, (Ptr{WebPMux}, UInt32, Ptr{WebPMuxFrameInfo}), mux, nth, frame)
 end
 
 function WebPMuxDeleteFrame(mux, nth)
-    ccall((:WebPMuxDeleteFrame, libwebp), WebPMuxError, (Ptr{WebPMux}, UInt32), mux, nth)
+    ccall((:WebPMuxDeleteFrame, libwebpmux), WebPMuxError, (Ptr{WebPMux}, UInt32), mux, nth)
 end
 
 function WebPMuxSetAnimationParams(mux, params)
-    ccall((:WebPMuxSetAnimationParams, libwebp), WebPMuxError, (Ptr{WebPMux}, Ptr{WebPMuxAnimParams}), mux, params)
+    ccall((:WebPMuxSetAnimationParams, libwebpmux), WebPMuxError, (Ptr{WebPMux}, Ptr{WebPMuxAnimParams}), mux, params)
 end
 
 function WebPMuxGetAnimationParams(mux, params)
-    ccall((:WebPMuxGetAnimationParams, libwebp), WebPMuxError, (Ptr{WebPMux}, Ptr{WebPMuxAnimParams}), mux, params)
+    ccall((:WebPMuxGetAnimationParams, libwebpmux), WebPMuxError, (Ptr{WebPMux}, Ptr{WebPMuxAnimParams}), mux, params)
 end
 
 function WebPMuxSetCanvasSize(mux, width, height)
-    ccall((:WebPMuxSetCanvasSize, libwebp), WebPMuxError, (Ptr{WebPMux}, Cint, Cint), mux, width, height)
+    ccall((:WebPMuxSetCanvasSize, libwebpmux), WebPMuxError, (Ptr{WebPMux}, Cint, Cint), mux, width, height)
 end
 
 function WebPMuxGetCanvasSize(mux, width, height)
-    ccall((:WebPMuxGetCanvasSize, libwebp), WebPMuxError, (Ptr{WebPMux}, Ptr{Cint}, Ptr{Cint}), mux, width, height)
+    ccall((:WebPMuxGetCanvasSize, libwebpmux), WebPMuxError, (Ptr{WebPMux}, Ptr{Cint}, Ptr{Cint}), mux, width, height)
 end
 
 function WebPMuxGetFeatures(mux, flags)
-    ccall((:WebPMuxGetFeatures, libwebp), WebPMuxError, (Ptr{WebPMux}, Ptr{UInt32}), mux, flags)
+    ccall((:WebPMuxGetFeatures, libwebpmux), WebPMuxError, (Ptr{WebPMux}, Ptr{UInt32}), mux, flags)
 end
 
 function WebPMuxNumChunks(mux, id, num_elements)
-    ccall((:WebPMuxNumChunks, libwebp), WebPMuxError, (Ptr{WebPMux}, WebPChunkId, Ptr{Cint}), mux, id, num_elements)
+    ccall((:WebPMuxNumChunks, libwebpmux), WebPMuxError, (Ptr{WebPMux}, WebPChunkId, Ptr{Cint}), mux, id, num_elements)
 end
 
 function WebPMuxAssemble(mux, assembled_data)
-    ccall((:WebPMuxAssemble, libwebp), WebPMuxError, (Ptr{WebPMux}, Ptr{WebPData}), mux, assembled_data)
+    ccall((:WebPMuxAssemble, libwebpmux), WebPMuxError, (Ptr{WebPMux}, Ptr{WebPData}), mux, assembled_data)
 end
 
 mutable struct WebPAnimEncoder end
 
 function WebPAnimEncoderOptionsInitInternal(arg1, arg2)
-    ccall((:WebPAnimEncoderOptionsInitInternal, libwebp), Cint, (Ptr{WebPAnimEncoderOptions}, Cint), arg1, arg2)
-end
-
-function WebPAnimEncoderOptionsInit(enc_options)
-    ccall((:WebPAnimEncoderOptionsInit, libwebp), Cint, (Ptr{WebPAnimEncoderOptions},), enc_options)
+    ccall((:WebPAnimEncoderOptionsInitInternal, libwebpmux), Cint, (Ptr{WebPAnimEncoderOptions}, Cint), arg1, arg2)
 end
 
 function WebPAnimEncoderNewInternal(arg1, arg2, arg3, arg4)
-    ccall((:WebPAnimEncoderNewInternal, libwebp), Ptr{WebPAnimEncoder}, (Cint, Cint, Ptr{WebPAnimEncoderOptions}, Cint), arg1, arg2, arg3, arg4)
-end
-
-function WebPAnimEncoderNew(width, height, enc_options)
-    ccall((:WebPAnimEncoderNew, libwebp), Ptr{WebPAnimEncoder}, (Cint, Cint, Ptr{WebPAnimEncoderOptions}), width, height, enc_options)
+    ccall((:WebPAnimEncoderNewInternal, libwebpmux), Ptr{WebPAnimEncoder}, (Cint, Cint, Ptr{WebPAnimEncoderOptions}, Cint), arg1, arg2, arg3, arg4)
 end
 
 function WebPAnimEncoderAdd(enc, frame, timestamp_ms, config)
-    ccall((:WebPAnimEncoderAdd, libwebp), Cint, (Ptr{WebPAnimEncoder}, Ptr{WebPPicture}, Cint, Ptr{WebPConfig}), enc, frame, timestamp_ms, config)
+    ccall((:WebPAnimEncoderAdd, libwebpmux), Cint, (Ptr{WebPAnimEncoder}, Ptr{WebPPicture}, Cint, Ptr{WebPConfig}), enc, frame, timestamp_ms, config)
 end
 
 function WebPAnimEncoderAssemble(enc, webp_data)
-    ccall((:WebPAnimEncoderAssemble, libwebp), Cint, (Ptr{WebPAnimEncoder}, Ptr{WebPData}), enc, webp_data)
+    ccall((:WebPAnimEncoderAssemble, libwebpmux), Cint, (Ptr{WebPAnimEncoder}, Ptr{WebPData}), enc, webp_data)
 end
 
 function WebPAnimEncoderGetError(enc)
-    ccall((:WebPAnimEncoderGetError, libwebp), Ptr{Cchar}, (Ptr{WebPAnimEncoder},), enc)
+    ccall((:WebPAnimEncoderGetError, libwebpmux), Ptr{Cchar}, (Ptr{WebPAnimEncoder},), enc)
 end
 
 function WebPAnimEncoderDelete(enc)
-    ccall((:WebPAnimEncoderDelete, libwebp), Cvoid, (Ptr{WebPAnimEncoder},), enc)
+    ccall((:WebPAnimEncoderDelete, libwebpmux), Cvoid, (Ptr{WebPAnimEncoder},), enc)
 end
 
 @cenum WebPFeatureFlags::UInt32 begin
@@ -938,18 +866,6 @@ end
     ALPHA_FLAG = 16
     ICCP_FLAG = 32
     ALL_VALID_FLAGS = 62
-end
-
-function WebPDataInit(webp_data)
-    ccall((:WebPDataInit, libwebp), Cvoid, (Ptr{WebPData},), webp_data)
-end
-
-function WebPDataClear(webp_data)
-    ccall((:WebPDataClear, libwebp), Cvoid, (Ptr{WebPData},), webp_data)
-end
-
-function WebPDataCopy(src, dst)
-    ccall((:WebPDataCopy, libwebp), Cint, (Ptr{WebPData}, Ptr{WebPData}), src, dst)
 end
 
 function WebPMalloc(size)
