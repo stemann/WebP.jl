@@ -29,7 +29,8 @@ function decode(
     if bitstream_features[].has_animation == 1
         @warn("Animated WebP not supported")
         WebPGetInfo(pointer(data), length(data), width, height)
-        image = transpose ? ones(TColor, width[], height[]) : ones(TColor, height[], width[])
+        image =
+            transpose ? ones(TColor, width[], height[]) : ones(TColor, height[], width[])
         return image
     end
     decoded_data_ptr = webp_decode_fn(pointer(data), length(data), width, height)
