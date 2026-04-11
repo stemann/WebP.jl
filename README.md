@@ -36,6 +36,18 @@ and subsequently read,
 image = WebP.read_webp("lighthouse.webp")
 ```
 
+Animated WebP files can be read by opting into animated decoding,
+```julia
+frames = WebP.read_webp("clip.webp"; animated = true)
+first_frame = frames[:, :, 1]
+```
+
+If animation metadata is needed, use the explicit animation API,
+```julia
+animation = WebP.read_webp_animation("clip.webp")
+frame_timestamps = [frame.timestamp_ms for frame in animation.frames]
+```
+
 ### Decoding and encoding
 
 An image may be encoded,
@@ -50,4 +62,15 @@ data = WebP.encode(image) # data is a Vector{UInt8}
 and subsequently decoded,
 ```julia
 image = WebP.decode(data)
+```
+
+Animated WebP data can be decoded in the same way,
+```julia
+frames = WebP.decode(data; animated = true)
+```
+
+For timing and loop metadata, use the explicit animation API,
+```julia
+animation = WebP.decode_animation(data)
+frame_timestamps = [frame.timestamp_ms for frame in animation.frames]
 ```
