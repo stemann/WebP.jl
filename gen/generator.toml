@@ -4,6 +4,7 @@ library_names = { "/demux\\.h$" = "libwebpdemux", "/mux\\.h$" = "libwebpmux", "/
 output_file_path = "../src/Wrapper.jl"
 module_name = "Wrapper"
 jll_pkg_name = "libwebp_jll"
+epilogue_file_path = "./epilogue.jl"
 export_symbol_prefixes = ["WebP"]
 
 # These are header-only inline convenience wrappers. Clang sees them in the
