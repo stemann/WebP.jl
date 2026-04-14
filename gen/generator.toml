@@ -4,31 +4,5 @@ library_names = { "/demux\\.h$" = "libwebpdemux", "/mux\\.h$" = "libwebpmux", "/
 output_file_path = "../src/Wrapper.jl"
 module_name = "Wrapper"
 jll_pkg_name = "libwebp_jll"
+epilogue_file_path = "header_only_wrappers_epilogue.jl"
 export_symbol_prefixes = ["WebP"]
-
-# These are header-only inline convenience wrappers. Clang sees them in the
-# headers, but the shared libraries only export the corresponding `*Internal`
-# entry points or lower-level functions they call through to.
-output_ignorelist = [
-    "WebPAnimDecoderNew",
-    "WebPAnimDecoderOptionsInit",
-    "WebPAnimEncoderNew",
-    "WebPAnimEncoderOptionsInit",
-    "WebPConfigInit",
-    "WebPConfigPreset",
-    "WebPDataClear",
-    "WebPDataCopy",
-    "WebPDataInit",
-    "WebPDemux",
-    "WebPDemuxPartial",
-    "WebPGetFeatures",
-    "WebPIDecGetYUV",
-    "WebPInitDecBuffer",
-    "WebPInitDecoderConfig",
-    "WebPIsAlphaMode",
-    "WebPIsPremultipliedMode",
-    "WebPIsRGBMode",
-    "WebPMuxCreate",
-    "WebPMuxNew",
-    "WebPPictureInit",
-]
