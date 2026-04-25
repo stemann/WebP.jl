@@ -26,6 +26,10 @@ using WebP
                 "5_webp_ll.webp" => (300, 300),
             ),
         ),
+        animation = (
+            url = "https://storage.googleapis.com/downloads.webmproject.org/webp/images/",
+            data = Dict("dancing_banana2.lossless.webp" => (1050, 990)),
+        ),
     )
     for gallery in webp_galleries
         for (filename, image_size) in gallery.data

@@ -18,8 +18,21 @@ function decode(
     else
         throw(ArgumentError("Unsupported color type: $TColor"))
     end
+
+    bitstream_features = Ref{Wrapper.WebPBitstreamFeatures}()
+    # WebPGetFeatures is not available in libwebp dynamic library, but WebPGetFeaturesInternal is equivalent: https://github.com/webmproject/libwebp/blob/v1.4.0/src/webp/decode.h#L441
+    Wrapper.WebPGetFeaturesInternal(
+        pointer(data), length(data), bitstream_features, Wrapper.WEBP_DECODER_ABI_VERSION
+    )
     width = Ref{Int32}(-1)
     height = Ref{Int32}(-1)
+    if bitstream_features[].has_animation == 1
+        @warn("Animated WebP not supported")
+        WebPGetInfo(pointer(data), length(data), width, height)
+        image =
+            transpose ? ones(TColor, width[], height[]) : ones(TColor, height[], width[])
+        return image
+    end
     decoded_data_ptr = webp_decode_fn(pointer(data), length(data), width, height)
     decoded_data_size = (sizeof(TDecodedColor), Int(width[]), Int(height[]))
     decoded_data = unsafe_wrap(Array{UInt8, 3}, decoded_data_ptr, decoded_data_size)
